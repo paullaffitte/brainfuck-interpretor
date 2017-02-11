@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "interpretor.h"
+#include "parser.h"
 
 int		stack(t_bf *bf, char c)
 {
@@ -12,13 +13,14 @@ int		stack(t_bf *bf, char c)
     {
       if (!(tmp = malloc(sizeof(char) * (bf->stack_size + STACK_SIZE))))
 	return (-1);
-      strcpy(bf->stack, tmp);
+      strcpy(tmp, bf->stack);
       free(bf->stack);
       bf->stack = tmp;
       bf->stack_size += STACK_SIZE;
     }
   bf->stack[bf->stack_head] = c;
   bf->stack_head++;
+  bf->stack[bf->stack_head] = '\0';
   return (0);
 }
 
@@ -41,17 +43,21 @@ void		destack(t_bf *bf)
 int		interprete_char(char c, t_bf *bf)
 {
   if (c == '<')
-    bf->position = bf->position == 0 ? MEM_SIZE - 1 : bf->position - 1;
+    bf->mem_pos = bf->mem_pos == 0 ? MEM_SIZE - 1 : bf->mem_pos - 1;
   else if (c == '>')
-    bf->position = bf->position == MEM_SIZE - 1 ? 0 : bf->position + 1;
+    bf->mem_pos = bf->mem_pos == MEM_SIZE - 1 ? 0 : bf->mem_pos + 1;
   else if (c == '+')
-    bf->memory[bf->position]++;
+    bf->memory[bf->mem_pos]++;
   else if (c == '-')
-    bf->memory[bf->position]--;
-  else if (c == '.' && stack(bf, bf->memory[bf->position]))
-    return (-1);
+    bf->memory[bf->mem_pos]--;
+  else if (c == '.')
+    return (stack(bf, bf->memory[bf->mem_pos]));
   else if (c == ',')
-    read(0, &bf->memory[bf->position], 1);
+    read(0, &bf->memory[bf->mem_pos], 1);
+  else if (c == '[')
+    return (open_loop(bf));
+  else if (c == ']')
+    return (close_loop(bf));
   else if (c != ' ' && c != '\n' && c != '\t')
     return (-1);
   return (0);
@@ -59,19 +65,17 @@ int		interprete_char(char c, t_bf *bf)
 
 int		interprete(char *filename)
 {
-  char		*brainfuck;
   t_bf		bf;
-  int		i;
 
-  if ((brainfuck = load_code(filename)) == NULL
-      || init_bf(&bf) == -1)
+  if ((bf.code = load_code(filename)) == NULL
+      || init_bf(&bf) == -1
+      || parse_script(bf.code, &bf.loops) == -1)
     return (-1);
-  i = 0;
-  while (brainfuck[i])
+  while (bf.code[bf.code_position])
     {
-      if (interprete_char(brainfuck[i], &bf) == -1)
+      if (interprete_char(bf.code[bf.code_position], &bf) == -1)
 	return (-1);
-      i++;
+      bf.code_position++;
     }
   destack(&bf);
   return (0);

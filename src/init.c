@@ -14,11 +14,13 @@ int	init_bf(t_bf *bf)
       bf->memory[i] = 0;
       i++;
     }
-  bf->position = 0;
+  bf->code_position = 0;
+  bf->mem_pos = 0;
   bf->stack_head = 0;
   bf->stack_size = 0;
   if (!(bf->stack = malloc(sizeof(char) * STACK_SIZE)))
     return (-1);
+  bf->stack[0] = '\0';
   return (0);
 }
 

@@ -5,8 +5,10 @@ CC		=	gcc
 RM		=	rm -rf
 
 SRCS		=	src/main.c		\
+			src/parser.c		\
 			src/init.c		\
-			src/interpretor.c
+			src/interpretor.c	\
+			src/loops.c
 
 OBJS		=	$(SRCS:.c=.o)
 
