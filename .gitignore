@@ -35,3 +35,6 @@
 # Others
 .tags
 bfi
+.idea
+cmake-build-debug
+

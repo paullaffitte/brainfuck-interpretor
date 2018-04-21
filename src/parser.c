@@ -34,28 +34,7 @@ t_loop		*find_pairs(t_loop *loops)
   return (left_pair->next);
 }
 
-void		find_pairs_(t_loop *loops)
-{
-  t_loop	*right_pair;
-  int		depth;
-
-  right_pair = NULL;
-  depth = 0;
-  while (loops && loops->symbol != ']')
-    {
-      if (CALC_DEPTH(depth, loops->symbol) == -1 && right_pair == NULL)
-	right_pair = loops;
-      if (loops->symbol == '[')
-	{
-	  right_pair->pair = loops;
-	  loops->pair = right_pair;
-	  right_pair = NULL;
-	}
-      loops = loops->next;
-    }
-}
-
-int		parse_script(char *script, t_loop **buffer)
+int		parse_loops(char *script, t_loop **buffer)
 {
   int		depth;
   int		i;
@@ -76,6 +55,7 @@ int		parse_script(char *script, t_loop **buffer)
     }
   if (depth != 0)
     return (-1);
-  find_pairs(*buffer);
+  if (*buffer)
+    find_pairs(*buffer);
   return (0);
 }

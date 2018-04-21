@@ -69,7 +69,7 @@ int		interprete(char *filename)
 
   if ((bf.code = load_code(filename)) == NULL
       || init_bf(&bf) == -1
-      || parse_script(bf.code, &bf.loops) == -1)
+      || parse_loops(bf.code, &bf.loops) == -1)
     return (-1);
   while (bf.code[bf.code_position])
     {

@@ -5,6 +5,6 @@
 
 # include "interpretor.h"
 
-int	parse_script(char *script, t_loop **buffer);
+int	parse_loops(char *script, t_loop **buffer);
 
 #endif /* !PARSER_H_*/
